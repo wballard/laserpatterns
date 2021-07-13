@@ -1,5 +1,5 @@
 import paper from "paper";
-import { WindowedHexagon } from "../shapes/Hexagons";
+import { SixPetalFlowerHexagon, WindowedHexagon } from "../shapes/Hexagons";
 
 /**
  * Bee hive point centers.
@@ -57,6 +57,9 @@ const generateBeeHivePoints = (
   }
   points.push(...centerLinePoints);
 
+  // may only be one point for small tilings
+  if (points.length === 0) return [center];
+
   // and offset line starts with a stagger from the center
   const staggerLinePoints = new Array<paper.Point>();
   const staggerStart = (at = center.add(staggerOffset));
@@ -111,15 +114,15 @@ export const sidePanel = (scope: paper.PaperScope) => {
   // undersized by 10
   const red = new scope.Color("red");
   const green = new scope.Color("green");
-  const radius = 10;
+  const radius = 60;
   const border = 1;
-  //const bounds = new paper.Size(740, 320);
-  const bounds = new paper.Size(60, 60);
+  const bounds = new paper.Size(740, 320);
+  //const bounds = new paper.Size(90, 90);
   const tilesAt = generateBeeHivePoints(bounds, radius);
 
   // at each one of our tiles -- draw our shape
   tilesAt.forEach((at) => {
-    const trap = new WindowedHexagon(at, radius - border, 0.6, 0.2);
+    const trap = new SixPetalFlowerHexagon(at, radius - border, 0.6, 0.2);
     trap.strokeColor = green;
   });
 

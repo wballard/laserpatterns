@@ -27,6 +27,34 @@ export class HexagonWedge extends paper.Path {
 }
 
 /**
+ * A single petal wedge, drawn to the right.
+ */
+export class HexagonPetal extends paper.Path {
+  constructor(center?: paper.Point, radius = 1, scale = 1) {
+    if (center instanceof paper.Point) {
+      // start with a pie wedge
+      const fullWedge = new HexagonWedge(center, radius);
+      fullWedge.scale(scale);
+
+      // there is a bit of an implied stem
+      const stemUpperLeft = center.subtract(new paper.Point(0, radius / 20));
+      const stem = new paper.Path.Rectangle(
+        stemUpperLeft,
+        new paper.Size(radius * 0.75, radius / 10)
+      );
+
+      const petal = fullWedge.subtract(stem);
+
+      // finally kill the hard edges
+      petal.smooth({ type: "catmull-rom", factor: 0.8 });
+      super(petal.pathData);
+    } else {
+      super();
+    }
+  }
+}
+
+/**
  * A trapezoidal wedge. HexagonWedge with it's hat cut off. Illuminati.
  */
 export class HexagonTrapezoidalWedge extends paper.Path {
@@ -68,6 +96,34 @@ export class WindowedHexagon extends paper.Group {
         return slice;
       });
       super([window, ...slices]);
+    } else {
+      super();
+    }
+  }
+}
+
+/**
+ * A six petal flower hexagon cutout.
+ *
+ * The exterior of a containing hexagon is implied and not drawn.
+ */
+export class SixPetalFlowerHexagon extends paper.Group {
+  constructor(
+    center: paper.Point,
+    radius = 1,
+    percentToClip = 0.5,
+    percentForFraming = 0.2
+  ) {
+    if (center instanceof paper.Point) {
+      // and the window slices
+      const wedge = new HexagonPetal(center, radius, 1 - percentForFraming);
+      const slices = [0, 1, 2, 3, 4, 5].map((i) => {
+        const slice = wedge.clone();
+        slice.rotate(60 * i, center);
+        slice.scale(1 - percentForFraming);
+        return slice;
+      });
+      super([...slices]);
     } else {
       super();
     }
