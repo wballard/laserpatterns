@@ -49,11 +49,25 @@ export class HexagonTrapezoidalWedge extends paper.Path {
  * The exterior of a containing hexagon is implied and not drawn.
  */
 export class WindowedHexagon extends paper.Group {
-  constructor(center: paper.Point, radius = 1, percentToClip = 0.5) {
+  constructor(
+    center: paper.Point,
+    radius = 1,
+    percentToClip = 0.5,
+    percentForFraming = 0.2
+  ) {
     if (center instanceof paper.Point) {
       // center hexagon
       const window = new Hexagon(center, radius * percentToClip);
-      super([window]);
+      window.scale(1 - percentForFraming);
+      // and the window slices
+      const wedge = new HexagonTrapezoidalWedge(center, radius, percentToClip);
+      const slices = [0, 1, 2, 3, 4, 5].map((i) => {
+        const slice = wedge.clone();
+        slice.rotate(60 * i, center);
+        slice.scale(1 - percentForFraming);
+        return slice;
+      });
+      super([window, ...slices]);
     } else {
       super();
     }

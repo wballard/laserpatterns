@@ -4,9 +4,13 @@ import { useWindowSize } from "react-use";
 
 type PaperCanvasProps = {
   draw: (scope: paper.PaperScope) => void;
+  afterDraw?: (svgContent: SVGElement) => void;
 };
 
-export const PaperCanvas: React.FC<PaperCanvasProps> = ({ draw }) => {
+export const PaperCanvas: React.FC<PaperCanvasProps> = ({
+  draw,
+  afterDraw = console.log,
+}) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const [scope, setScope] = React.useState<paper.PaperScope>();
 
@@ -37,8 +41,9 @@ export const PaperCanvas: React.FC<PaperCanvasProps> = ({ draw }) => {
     if (scope) {
       resize();
       draw(scope);
+      afterDraw(scope.project.exportSVG());
     }
-  }, [windowSize, scope]);
+  }, [windowSize, scope, draw, afterDraw]);
 
   return <canvas ref={canvasRef} id="canvas" />;
 };
