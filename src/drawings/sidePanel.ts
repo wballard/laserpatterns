@@ -110,19 +110,21 @@ const generateBeeHivePoints = (
 };
 
 export const sidePanel = (scope: paper.PaperScope) => {
+  // table to is 1825 - 50 for bars x 610 - 50 for bars
+  // 1775 x 560
   scope.project.clear();
-  // undersized by 10
   const red = new scope.Color("red");
   const green = new scope.Color("green");
   const radius = 60;
-  const border = 1;
-  const bounds = new paper.Size(740, 320);
-  //const bounds = new paper.Size(90, 90);
+  const border = 5;
+  const bounds = new paper.Size(444, 560);
   const tilesAt = generateBeeHivePoints(bounds, radius);
 
   // at each one of our tiles -- draw our shape
   tilesAt.forEach((at) => {
-    const trap = new SixPetalFlowerHexagon(at, radius - border, 0.6, 0.2);
+    let builder = SixPetalFlowerHexagon;
+    builder = WindowedHexagon;
+    const trap = new builder(at, radius - border, 0.6, 0.2);
     trap.strokeColor = green;
   });
 
