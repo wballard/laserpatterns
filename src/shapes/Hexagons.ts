@@ -129,3 +129,66 @@ export class SixPetalFlowerHexagon extends paper.Group {
     }
   }
 }
+
+/**
+ * A parallelogram 120 deg wedge.
+ */
+export class ParallelogramWedge extends paper.Group {
+  constructor(center: paper.Point, radius = 1, frameWidth = 0.1) {
+    if (center instanceof paper.Point) {
+      // longest part of the parallel
+      const longArm = radius - frameWidth;
+      // short part of the parallel -- need to do some math
+      const hexagonSideLength = 2 * radius * Math.sin(Math.PI / 6);
+      const shortArm = (hexagonSideLength - (5 / 2) * frameWidth) / 2;
+      const top = center.add(new paper.Point(0, frameWidth / 2));
+      // start drawing the parallelogram
+      const left = top.add(new paper.Point(0, longArm)).rotate(60, top);
+      const bottom = left.add(new paper.Point(0, shortArm)).rotate(-60, left);
+      const right = bottom
+        .add(new paper.Point(0, longArm))
+        .rotate(-120, bottom);
+      const wedge = new paper.Path([top, left, bottom, right, top]);
+      const secondWedge = wedge.clone();
+      // and offset that second wedge to make stripe slices
+      secondWedge.translate(
+        new paper.Point(shortArm + frameWidth, 0).rotate(
+          30,
+          new paper.Point(0, 0)
+        )
+      );
+      super([wedge, secondWedge]);
+    } else {
+      super();
+    }
+  }
+}
+
+/**
+ * A heaxagon with parallelogram slices removed.
+ *
+ * The exterior of a containing hexagon is implied and not drawn.
+ */
+export class ParallelogramHexagon extends paper.Group {
+  constructor(
+    center: paper.Point,
+    radius = 1,
+    frameWidth = 0.1,
+    showSurround = false
+  ) {
+    if (center instanceof paper.Point) {
+      // surround hexagon
+      const surround = new Hexagon(center, radius);
+      // and the window slices
+      const wedge = new ParallelogramWedge(center, radius, frameWidth);
+      const slices = [0, 1, 2].map((i) => {
+        const slice = wedge.clone();
+        slice.rotate(120 * i, center);
+        return slice;
+      });
+      super([showSurround ? surround : null, ...slices]);
+    } else {
+      super();
+    }
+  }
+}

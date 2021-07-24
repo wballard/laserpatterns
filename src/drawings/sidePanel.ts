@@ -1,5 +1,9 @@
 import paper from "paper";
-import { SixPetalFlowerHexagon, WindowedHexagon } from "../shapes/Hexagons";
+import {
+  ParallelogramHexagon,
+  SixPetalFlowerHexagon,
+  WindowedHexagon,
+} from "../shapes/Hexagons";
 
 /**
  * Bee hive point centers.
@@ -115,16 +119,14 @@ export const sidePanel = (scope: paper.PaperScope) => {
   scope.project.clear();
   const red = new scope.Color("red");
   const green = new scope.Color("green");
-  const radius = 60;
+  const radius = 40;
   const border = 5;
   const bounds = new paper.Size(444, 560);
   const tilesAt = generateBeeHivePoints(bounds, radius);
 
   // at each one of our tiles -- draw our shape
   tilesAt.forEach((at) => {
-    let builder = SixPetalFlowerHexagon;
-    builder = WindowedHexagon;
-    const trap = new builder(at, radius - border, 0.6, 0.2);
+    const trap = new ParallelogramHexagon(at, radius, border);
     trap.strokeColor = green;
   });
 
